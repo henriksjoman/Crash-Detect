@@ -3,4 +3,9 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(Crash_detect)
 
-target_sources(app PRIVATE src/main.c)
+target_sources(app PRIVATE 
+  src/main.c
+  src/acc.c
+  src/spi.c
+  src/uart.c
+)

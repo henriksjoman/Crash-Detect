@@ -1,0 +1,127 @@
+/dts-v1/;
+#include <nordic/nrf52832_qfaa.dtsi>
+#include "Crash_nRF52-pinctrl.dtsi"
+
+/ {
+	model = "Board for evaluating crash detection";
+	compatible = "Thule,Crash-nRF52";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+	};
+
+	digin
+	{
+		compatible = "gpio-keys";
+		digin1: digin_1 {
+			gpios = <&gpio0 23 GPIO_PULL_DOWN>;
+			label = "int1";
+		};
+		digin2: digin_2 {
+			gpios = <&gpio0 22 GPIO_PULL_DOWN>;
+			label = "int2";
+		};
+	};
+	leds 
+	{
+		compatible = "gpio-leds";
+		led0: led_0 {
+			gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>;
+			label = "LED_X1";
+		};
+		led1: led_1 {
+			gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>;
+			label = "LED_X2";
+		};
+		led2: led_2 {
+			gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
+			label = "LED_X3";
+		};
+		led3: led_3 {
+			gpios = <&gpio0 14 GPIO_ACTIVE_HIGH>;
+			label = "LED_Y3";
+		};
+		led4: led_4 {
+			gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
+			label = "LED_Y4";
+		};
+		led5: led_5 {
+			gpios = <&gpio0 16 GPIO_ACTIVE_HIGH>;
+			label = "LED_Y5";
+		};
+	};
+	aliases 
+	{
+		led0 = &led0;
+		led1 = &led1;
+		led2 = &led2;
+		led3 = &led3;
+		led4 = &led4;
+		led5 = &led5;
+		digin1 = &digin1;
+		digin2 = &digin2;
+	};
+
+};
+
+&uart0 {
+	status = "okay";
+	pinctrl-0 = <&uart0_default>;
+    pinctrl-1 = <&uart0_sleep>;
+	pinctrl-names = "default" , "sleep";
+	current-speed = <115200>;
+};
+
+&spi1 {
+	status = "okay";
+	compatible = "nordic,nrf-spi";
+	pinctrl-0 = <&spi1_default>;
+	pinctrl-1 = <&spi1_sleep>;
+	pinctrl-names = "default" , "sleep";
+	cs-gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
+	bme280: bme280@0 
+	{
+		compatible = "bosch,bme280";
+		reg = <0>;
+		spi-max-frequency = <4000000>; 	
+	};
+};
+
+&gpiote0 {
+	status = "okay";
+};
+
+
+&gpio0 {
+	status = "okay";
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x00000000 DT_SIZE_K(48)>;
+		};
+
+		slot0_partition: partition@c000 {
+			label = "image-0";
+			reg = <0x0000c000 DT_SIZE_K(220)>;
+		};
+
+		slot1_partition: partition@43000 {
+			label = "image-1";
+			reg = <0x00043000 DT_SIZE_K(220)>;
+		};
+
+		storage_partition: partition@7a000 {
+			label = "storage";
+			reg = <0x0007a000 DT_SIZE_K(24)>;
+		};
+	};
+};

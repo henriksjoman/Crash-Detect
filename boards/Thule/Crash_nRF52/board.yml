@@ -1,0 +1,5 @@
+board:
+  name: Crash_nRF52
+  vendor: Thule
+  socs:
+    - name: nrf52832
